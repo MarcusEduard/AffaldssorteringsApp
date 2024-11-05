@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/Sortify.css">
+    <title>Sortify - Profile</title>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+</head>
+
+<body>
+
+    <div id="header">
+        <div id="branding">
+
+            <div id="sortify-logo">
+                <a href="Sortify.html">Sortify</a>
+            </div>
+        </div>
+
+
+        <div id="profile-icon">
+            <a href="Profile.html">👤</a>
+        </div>
+    </div>
+
+    <div id="sorted">
+        <button id="sorted-botton">27</button>
+        <div>Sorted</div>
+    </div>
+
+
+    <div id="menu-bar">
+
+        <div id="co2-info-container">
+
+            <a href="CO2.html">CO2</a>
+
+
+            <div id="scan-button-container">
+
+                <button id="scan-button" onclick="scanButtonClick()">+</button>
+            </div>
+
+            <a href="Info.html">Info</a>
+        </div>
+    </div>
+
+    <div id="separator-bar"></div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <div id="map"></div>
+
+    <script>
+        window.onload = async function() {
+            // Retrieve the last scanned barcode from local storage
+            // Define a mapping of barcodes to image URLs
+            const fetchedData = await fetch('http://127.0.0.1:3000/scanned').then(res => res.json());
+    
+            const productCount = fetchedData.data.length;
+            document.getElementById('sorted-botton').innerHTML = productCount;
+        }
+        var map = L.map('map');
+    
+    navigator.geolocation.getCurrentPosition((position) => {
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+
+        map.setView([latitude, longitude], 13);
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+        
+        var locations = [
+                { lat: 56.1496, lon: 10.2134, name: 'Havnen', sorting: 'Recyclable, Compost' },
+                { lat: 56.1555, lon: 10.2075, name: 'Sankt Clemens Torv', sorting: 'Recyclable, General Waste' },
+                { lat: 56.16459, lon: 10.20251, name: 'Fynsgade', sorting: 'Recyclable, Glass' },
+                { lat: 56.164293, lon: 10.202068, name: 'Ny Munkegade', sorting: 'Recyclable, Paper'},
+                { lat: 56.160186, lon: 10.204057, name: 'Ny Munkegade', sorting: 'Recyclable, Compost'},
+                { lat: 56.151186, lon: 10.199438, name: 'Sankt Nicolaus Gade', sorting: 'Recyclable, Compost, Glass'},
+                { lat: 56.150209, lon: 10.201131, name: 'Orla Lehmanns Allé', sorting: 'Recyclable, General Waste'},
+                { lat: 56.153915, lon: 10.209284, name: 'Fredensgade', sorting: 'Compost, General Waste'},
+                { lat: 56.145342, lon: 10.199839, name: 'Montanagade', sorting: 'Recyclable, Glass'}
+
+            ];
+    
+        locations.forEach(location => {
+            var marker = L.marker([location.lat, location.lon]).addTo(map);
+                
+                var popupContent = `<b>${location.name}</b><br><i>Sorting:</i> ${location.sorting}`;
+                
+                marker.bindPopup(popupContent);
+                
+                marker.on('click', function() {
+                    marker.openPopup();
+                });
+        });
+    });
+
+        function scanButtonClick() {
+
+            window.location.href = "Scanner.html";
+        }
+    </script>
+</body>
+
+</html>

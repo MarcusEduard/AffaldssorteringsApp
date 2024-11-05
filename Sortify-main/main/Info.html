@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/Info.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <title>Sortify - Scanned Items</title>
+</head>
+
+<body>
+
+    <div id="header">
+
+        <div id="branding">
+
+            <div id="sortify-logo">
+                <a href="Sortify.html">Sortify</a>
+            </div>
+        </div>
+
+
+        <div id="profile-icon">
+            <a href="Profile.html">👤</a>
+        </div>
+    </div>
+
+    <div id="sorted">
+        <button id="sorted-botton"></button>
+        <div>Sorted</div>
+    </div>
+
+
+    <div id="scanned-list">
+        <div id="search-bar">
+            <input type="text" id="search-input" placeholder="Search scanned items..." oninput="filterScannedItems()">
+        </div>
+        <div id="search-results">
+        </div>
+    </div>
+
+
+    <div id="menu-bar">
+
+        <div id="co2-info-container">
+
+            <a href="CO2.html">CO2</a>
+
+
+            <div id="scan-button-container">
+
+                <button id="scan-button" onclick="scanButtonClick()">+</button>
+            </div>
+
+
+            <a href="#">Info</a>
+        </div>
+
+    </div>
+    <script>
+
+// const scannedItemsData = [
+//             { name: 'Glass Of Olives', co2: 'Glass, Compost' },
+//             { name: 'Coca Cola Can', co2: 'Recyclable' },
+//             { name: 'Milk', co2: 'General Waste, Glass' },
+//             { name: 'Bag of Peppers', co2: 'Plastic, General Waste' },
+//             { name: 'Cocounut Milk', co2: 'Compost, Metal' },
+//             { name: 'Pizza Tray', co2: 'General Waste, Paper' },
+//         ];
+    window.onload = async function() {
+            // Retrieve the last scanned barcode from local storage
+            // Define a mapping of barcodes to image URLs
+            const fetchedData = await fetch('http://127.0.0.1:3000/scanned').then(res => res.json());
+    
+            const productCount = fetchedData.data.length;
+            document.getElementById('sorted-botton').innerHTML = productCount;
+        }
+        async function fetchScannedItems() {
+            try {
+               return await fetch('http://localhost:3000/info')
+                .then(response => response.json())
+                .then(data => {
+                    return data.data;
+                });
+            } catch (error) {
+                console.error('Error fetching scanned items:', error);
+                return [];
+            }
+        }
+
+        async function renderScannedItems() {
+            const scannedItems = await fetchScannedItems();
+            const searchResults = document.getElementById('search-results');
+            const searchInput = document.getElementById('search-input').value.toLowerCase();
+
+            searchResults.innerHTML = '';
+
+            scannedItems.forEach(item => {
+                const lowerCaseItemName = item.Name.toLowerCase();
+                if (lowerCaseItemName.includes(searchInput)) {
+                    const productCard = document.createElement('div');
+                    productCard.classList.add('product-card');
+
+                    const productName = document.createElement('div');
+                    productName.classList.add('product-name');
+                    productName.textContent = item.Name;
+
+                    const productCO2 = document.createElement('div');
+                    productCO2.classList.add('product-co2');
+                    productCO2.textContent = item.CO2;
+
+                    productCard.appendChild(productName);
+                    productCard.appendChild(productCO2);
+                    searchResults.appendChild(productCard);
+                }
+            });
+        }
+
+        window.addEventListener('load', renderScannedItems);
+
+        function filterScannedItems() {
+            renderScannedItems();
+        }
+
+        function scanButtonClick() {
+
+window.location.href = "Scanner.html";
+}
+    </script>
+</body>
+
+</html>

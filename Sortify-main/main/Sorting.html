@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/Sorting.css">
+    <title>Sortify</title>
+</head>
+
+
+<body>
+    <div id="header">
+
+        <div id="branding">
+
+            <div id="sortify-logo">
+                <a href="Sortify.html">Sortify</a>
+            </div>
+        </div>
+
+
+        <div id="profile-icon">
+            <a href="Profile.html">👤</a>
+        </div>
+    </div>
+
+
+    <div id="square-box">
+        <img src="" style="width: 100%;">
+        <a id="data-box" style="margin-left: auto; margin-right: auto; position: relative;"></a>
+        
+        
+        
+        <!-- <div class="box" id="box1"></div>
+        <div class="box" id="box2"></div>
+        <div class="box" id="box3"></div>
+        <div class="box" id="box4"></div> -->
+        
+    </div>
+
+    <div id="map">
+        <button id="map-button">
+            <a href="MAP.html">Where To Sort?</a>
+        </button>
+    </div>
+
+    <div id="menu-bar">
+
+        <div id="co2-info-container">
+
+            <a href="CO2.html">CO2</a>
+
+
+            <div id="scan-button-container">
+
+                <button id="scan-button" onclick="scanButtonClick()">+</button>
+            </div>
+
+
+            <a href="Info.html">Info</a>
+        </div>
+    </div>
+
+
+
+    <script>
+        function scanButtonClick() {
+
+window.location.href = "Scanner.html";
+}
+    </script>
+
+
+<script>
+    window.onload = async function() {
+        // Retrieve the last scanned barcode from local storage
+        const lastScannedBarcode = localStorage.getItem('lastScannedBarcode');
+        // Define a mapping of barcodes to image URLs
+        const fetchedData = await fetch('http://127.0.0.1:3000/items').then(res => res.json());
+
+        // Find the corresponding image URL
+        const product = fetchedData.data.find(item => item.barcode === lastScannedBarcode);
+        if (product) {
+            // Update the image source to the corresponding image
+            document.querySelector('#square-box img').src = `./images/${product.image_filename}`;
+            document.getElementById('data-box').innerHTML = product.product_name;
+            var myHeaders = new Headers();
+
+            const data = {
+            "Barcode": lastScannedBarcode,
+            "Name": product.product_name,
+            };
+            console.log('data', data);
+            await fetch("http://localhost:3000/scanned", {
+                method: 'POST', // Specify the method
+                headers: {
+                    'Content-Type': 'application/json', // Specify the data type
+                },
+                body: JSON.stringify(data), // Convert the data to a JSON string
+                })
+            .then(response => response.text())
+            .then(result => localStorage.setItem('lastScannedBarcode', ""))// Clear the last scanned barcode from local storage)
+            .catch(error => console.log('error', error));
+
+        } else {
+            document.querySelector('#square-box img').src = `./images/Image_not_available.png`;
+            console.error('No image found for barcode:', lastScannedBarcode);
+
+            // Clear the last scanned barcode from local storage
+            localStorage.setItem('lastScannedBarcode', "")
+      
+        }
+        
+    }
+</script>
+
+
+    
+</body>
+
+</html>

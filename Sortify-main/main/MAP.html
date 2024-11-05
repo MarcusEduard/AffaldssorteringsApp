@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/Map.css">
+    <title>Sortify - MAP</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+</head>
+
+<body>
+    <div id="header">
+        <div id="branding">
+            <div id="sortify-logo">
+                <a href="Sortify.html">Sortify</a>
+            </div>
+        </div>
+        <div id="profile-icon">
+            <a href="Profile.html">👤</a>
+        </div>
+    </div>
+
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <div id="map"></div>
+
+    <div id="menu-bar">
+        <div id="co2-info-container">
+            <a href="CO2.html">CO2</a>
+            <div id="scan-button-container">
+                <button id="scan-button" onclick="scanButtonClick()">+</button>
+            </div>
+            <a href="Info.html">Info</a>
+        </div>
+    </div>
+
+    <script>
+        var map = L.map('map');
+        var routingControl;
+
+        navigator.geolocation.getCurrentPosition((position) => {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+        
+        var locations = [
+                { lat: 56.1496, lon: 10.2134, name: 'Havnen', sorting: 'Recyclable, Compost' },
+                { lat: 56.1555, lon: 10.2075, name: 'Sankt Clemens Torv', sorting: 'Recyclable, General Waste' },
+                { lat: 56.16459, lon: 10.20251, name: 'Fynsgade', sorting: 'Recyclable, Glass' },
+                { lat: 56.164293, lon: 10.202068, name: 'Ny Munkegade', sorting: 'Recyclable, Paper'},
+                { lat: 56.160186, lon: 10.204057, name: 'Ny Munkegade', sorting: 'Recyclable, Compost'},
+                { lat: 56.151186, lon: 10.199438, name: 'Sankt Nicolaus Gade', sorting: 'Recyclable, Compost, Glass'},
+                { lat: 56.150209, lon: 10.201131, name: 'Orla Lehmanns Allé', sorting: 'Recyclable, General Waste'},
+                { lat: 56.153915, lon: 10.209284, name: 'Fredensgade', sorting: 'Compost, General Waste'},
+                { lat: 56.145342, lon: 10.199839, name: 'Montanagade', sorting: 'Recyclable, Glass'}
+
+            ];
+    
+            var nearestLocation = findNearestLocation(locations, latitude, longitude);
+
+            map.setView([nearestLocation.lat, nearestLocation.lon], 17);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            locations.forEach(location => {
+                var marker = L.marker([location.lat, location.lon]).addTo(map);
+
+                var popupContent = `<b>${location.name}</b><br><i>Sorting:</i> ${location.sorting}`;
+
+                marker.bindPopup(popupContent);
+
+                marker.on('click', function () {
+                    marker.openPopup();
+                });
+            });
+
+            routingControl = L.Routing.control({
+                waypoints: [
+                    L.latLng(latitude, longitude),
+                    L.latLng(nearestLocation.lat, nearestLocation.lon)
+                ],
+                routeWhileDragging: true
+            }).addTo(map);
+        });
+
+        function findNearestLocation(locations, lat, lon) {
+            var nearestLocation;
+            var minDistance = Infinity;
+
+            locations.forEach(location => {
+                var distance = calculateDistance(lat, lon, location.lat, location.lon);
+
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    nearestLocation = location;
+                }
+            });
+
+            return nearestLocation;
+        }
+
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            var R = 6371;
+            var dLat = deg2rad(lat2 - lat1);
+            var dLon = deg2rad(lon2 - lon1);
+            var a =
+                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            var distance = R * c; 
+            return distance;
+        }
+
+        function deg2rad(deg) {
+            return deg * (Math.PI / 180);
+        }
+
+        function scanButtonClick() {
+            console.log('Scan button clicked');
+        }
+    </script>
+</body>
+
+</html>

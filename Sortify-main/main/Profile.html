@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/Profile.css">
+    <title>Sortify - Profile</title>
+</head>
+
+<body>
+
+    <div id="header">
+
+        <div id="branding">
+
+            <div id="sortify-logo">
+                <a href="Sortify.html">Sortify</a>
+            </div>
+        </div>
+
+
+        <div id="profile-icon">
+            <a href="Profile.html">👤</a>
+        </div>
+    </div>
+
+
+
+
+    <div id="button-container">
+        <div id="sorted">
+            <button id="sorted-botton"></button>
+            <div class="button-label">Sorted</div>
+        </div>
+
+        <div id="co2_saved">
+            <button id="saved-botton">77g</button>
+            <div class="button-label">Saved</div>
+        </div>
+    </div>
+
+
+
+
+    <div id="date-bar">
+        <select id="month-select">
+            <option value="january">January</option>
+            <option value="february">February</option>
+            <option value="march">March</option>
+            <option value="april">April</option>
+            <option value="may">May</option>
+            <option value="june">June</option>
+            <option value="july">July</option>
+            <option value="august">August</option>
+            <option value="september">September</option>
+            <option value="october">October</option>
+            <option value="november">November</option>
+            <option value="december">December</option>
+
+        </select>
+
+        <select id="year-select">
+            <option value="2020">2020</option>
+            <option value="2021">2021</option>
+            <option value="2022">2022</option>
+            <option value="2023">2023</option>
+
+        </select>
+    </div>
+
+    <div id="product-list">
+       <ul id="product-list-ul"></ul>
+    </div>
+
+    <div id="menu-bar">
+
+        <div id="co2-info-container">
+
+            <a href="CO2.html">CO2</a>
+
+
+            <div id="scan-button-container">
+
+                <button id="scan-button" onclick="scanButtonClick()">+</button>
+            </div>
+
+
+            <a href="Info.html">Info</a>
+        </div>
+
+    </div>
+
+    <script>
+        window.onload = async function() {
+            // Retrieve the last scanned barcode from local storage
+            // Define a mapping of barcodes to image URLs
+            const fetchedData = await fetch('http://127.0.0.1:3000/scanned').then(res => res.json());
+    
+         //for each element in fetchedData.data create a list item  with span for and append it to the ul
+            const productListUl = document.getElementById('product-list-ul');
+            fetchedData.data.forEach(item => {
+                const listItem = document.createElement('li');
+                const itemName = document.createElement('span');
+                const barcode = document.createElement('span');
+                const timeOfScan = document.createElement('span')
+                itemName.innerHTML = item.Name;
+                barcode.innerHTML = "Barcode: " + item.Barcode;
+                timeOfScan.innerHTML = item.Date_Scanned;
+                listItem.appendChild(itemName);
+                listItem.appendChild(barcode);
+                listItem.appendChild(timeOfScan);
+                productListUl.appendChild(listItem);
+            });
+            const productCount = fetchedData.data.length;
+            document.getElementById('sorted-botton').innerHTML = productCount;
+        }
+    </script>
+<script>
+    function scanButtonClick() {
+
+window.location.href = "Scanner.html";
+}
+</script>
+</body>
+
+</html>

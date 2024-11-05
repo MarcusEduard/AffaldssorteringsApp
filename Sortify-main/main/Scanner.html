@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sortify</title>
+    <link rel="stylesheet" href="css/Scanner.css">
+</head>
+<body>
+
+    <div id="header">
+        
+        <div id="branding">
+            
+            <div id="sortify-logo">
+                <a href="Sortify.html">Sortify</a>
+            </div>
+        </div>
+
+        
+        <div id="profile-icon">
+            <a href="Profile.html">👤</a></div>
+    </div>
+    
+    
+    <script src="./node_modules/html5-qrcode/html5-qrcode.min.js"></script>
+    <div id="reader" style="width: 100%; height: 100%;"></div>
+    
+    <div id="result-container">
+        <p id="result"></p>
+    </div>
+   
+    <div id="menu-bar">
+        
+        <div id="co2-info-container">
+            
+            <a href="CO2.html">CO2</a>
+
+            
+            <div id="scan-button-container">
+                
+                <button id="scan-button" onclick="scanButtonClick()">+</button>
+            </div>
+
+            
+            <a href="Info.html">Info</a>
+        </div>
+    </div>
+
+    
+    
+
+
+    
+    <script>
+        
+        const html5Qrcode = new Html5Qrcode('reader');
+    
+        // Updated qrCodeSuccessCallback function to save the decoded text and redirect
+        const qrCodeSuccessCallback = async (decodedText, decodedResult) => {
+            if (decodedText) {
+                // Store the decoded text in local storage
+                localStorage.setItem('lastScannedBarcode', decodedText);
+    
+                // Redirect to Sorting.html
+                window.location.href = 'Sorting.html';
+            }
+        }
+    
+        const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+        html5Qrcode.start({ facingMode: "environment" }, config, qrCodeSuccessCallback);
+    </script>
+        
+    
+    
+</body>
+</html>
